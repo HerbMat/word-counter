@@ -4,6 +4,8 @@ jdk:
   - openjdk10
 before_install:
   - chmod +x gradlew
+install:
+  - ./gradlew -version
 script:
-  - gradle build
-  - gradle check
+  - ./gradlew build
+  - ./gradlew check
