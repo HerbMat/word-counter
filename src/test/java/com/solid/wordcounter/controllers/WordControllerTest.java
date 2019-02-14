@@ -4,22 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solid.wordcounter.commands.WordCommand;
 import com.solid.wordcounter.commands.WordCountResultCommand;
 import com.solid.wordcounter.exception.GenericServiceException;
-import com.solid.wordcounter.handlers.RestExceptionHandler;
 import com.solid.wordcounter.services.WordService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.security.MessageDigest;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.containsString;
@@ -32,27 +32,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
+@WebAppConfiguration
 @SpringBootTest
 public class WordControllerTest {
 
-    @Mock
+    @MockBean
     WordService wordService;
 
-    @InjectMocks
+    @MockBean
+    MessageSource messageSource;
+
+    @Autowired
     WordController wordController;
 
-    @Mock
-    MessageSource messageSource;
+    @Autowired
+    WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
 
     private ObjectMapper mapper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(wordController)
-                .setControllerAdvice(new RestExceptionHandler(messageSource)).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mapper = new ObjectMapper();
     }
 
@@ -113,14 +116,13 @@ public class WordControllerTest {
     @Test
     public void getWordCountFailedValidation() throws Exception {
 
-        mockMvc.perform(get("/word/getCount/23"))
+        mockMvc.perform(get("/word/getCount/2"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().string(containsString("Word cannot be blank.")))
                 .andExpect(content().string(containsString("Word can only have letters.")));
     }
 
-    private byte[] toJson(Object r) throws Exception {
-        return mapper.writeValueAsString(r).getBytes();
+    private String toJson(Object r) throws Exception {
+        return mapper.writeValueAsString(r);
     }
 }

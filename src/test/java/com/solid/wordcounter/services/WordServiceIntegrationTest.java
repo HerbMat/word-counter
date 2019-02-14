@@ -34,7 +34,7 @@ public class WordServiceIntegrationTest {
     WordService wordService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp()  {
         wordService = new DefaultWordService(wordRepository, modelMapper);
         insertTestWordToDatabase("word", 3L);
     }

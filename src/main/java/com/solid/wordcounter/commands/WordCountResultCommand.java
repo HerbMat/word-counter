@@ -1,5 +1,6 @@
 package com.solid.wordcounter.commands;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.io.Serializable;
@@ -15,6 +16,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class WordCountResultCommand implements Serializable {
+
+    @ApiModelProperty(notes = "Word for which is returned counter.")
     String word;
+
+    @ApiModelProperty(notes = "Number of attempts to add word.")
     long counter;
 }
