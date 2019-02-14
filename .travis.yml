@@ -4,10 +4,6 @@ jdk:
   - openjdk10
 before_install:
   - chmod +x gradlew
-install:
-  - ./gradlew -version
 script:
-  - ./gradlew build
-  - ./gradlew check
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - gradle build
+  - gradle check
